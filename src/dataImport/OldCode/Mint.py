@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import mintapi
 import getpass
 import keyring
@@ -34,7 +35,7 @@ class MintData:
             password = getpass.getpass("Please Enter Your Password: ")
             #we can try to log in now
             try:
-                self.mint = mintapi.Mint(email,password)
+                self.mint = mintapi.Mint(email,password,mfa_method='sms',headless=False,driver=None)
             except:
                 #There was some sort of error so close the program
                 print("Seems like there was an error with your credentials\n")
@@ -46,13 +47,13 @@ class MintData:
             keyring.set_password("mint",email,password)
         else:
             try:
-                self.mint = mintapi.Mint(email,password)
+                self.mint = mintapi.Mint(email,password,mfa_method='sms',headless=False,driver=None)
             except:
                 #There was some sort of error so close the program
                 print("Seems like there was an error with your credentials\n")
                 password = getpass.getpass("Please Enter Your Password: ")
                 try:
-                    self.mint = mintapi.Mint(email,password)
+                    self.mint = mintapi.Mint(email,password,mfa_method='sms',headless=False,driver=None)
                 except:
                     #There was some sort of error so close the program
                     print("Seems like there was an error with your credentials\n")
@@ -62,8 +63,11 @@ class MintData:
                 print("Login successful!\n")
                 print("Will store password in the keyring\n")
                 keyring.set_password("mint",email,password)
+            print("Login Successful!")
         #Make sure mint isn't none
         assert self.mint != None
+        self.transactions = self.mint.get_transaction_data()
+        self.mint.close()
     def getTransactions(self,startDate=None,endDate=None):
         '''
         Method will return all transactions in a lsit of transaction objects
@@ -72,6 +76,19 @@ class MintData:
             endDate: The end date to look for
         Outputs:
             Will output a list of transaction objects
+        '''
+        return self.transactions
+
+    def close(self):
+        '''
+        Method will close the chromium browser and exit safely
+        '''
+        self.mint.close()
+if __name__ == '__main__':
+    mD = MintData()
+    transactions = mD.getTransactions()
+    print(transactions.head(20))
+    mD.close()
 
 
  

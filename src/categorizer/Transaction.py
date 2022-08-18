@@ -7,7 +7,7 @@ class Transaction:
     regarding a transaction
     '''
 
-    def __init__(self,amount,name,category=None):
+    def __init__(self,amount,name,category=None,description=None):
         '''
         Constructor
         Inputs:
@@ -21,4 +21,5 @@ class Transaction:
         self.amount = amount
         self.name = name
         self.category = category
+        self.description = self.description
 
